@@ -1,9 +1,6 @@
 var assert = require("assert");
 describe('sanitizeHtml', function() {
-  var sanitizeHtml;
-  it('should be successfully initialized', function() {
-    sanitizeHtml = require('../dist/index.js');
-  });
+  var sanitizeHtml = require('../dist/index.js');
   it('should pass through simple well-formed whitelisted markup', function() {
     assert.equal(sanitizeHtml('<div><p>Hello <b>there</b></p></div>'), '<div><p>Hello <b>there</b></p></div>');
   });
@@ -796,7 +793,7 @@ describe('sanitizeHtml', function() {
   it('Should not pass through &0; unescaped if decodeEntities is true (the default)', function() {
     assert.equal(sanitizeHtml('<img src="<0&0;0.2&" />', {allowedTags: ['img']}), '<img src="&lt;0&amp;0;0.2&amp;" />');
   });
-  it('Should not double encode ampersands on HTML entities if decodeEntities is false (TODO more tests, this is too loose to rely upon)', function() {
+  it('Should not double encode ampersands on HTML entities if decodeEntities is false', function() {
     var textIn = 'This &amp; & that &reg; &#x0000A; &#10; &plusmn; OK?';
     var expectedResult = 'This &amp; &amp; that &reg; &#x0000A; &#10; &plusmn; OK?';
     var sanitizeHtmlOptions = {
@@ -806,17 +803,20 @@ describe('sanitizeHtml', function() {
     };
     assert.equal(sanitizeHtml(textIn, sanitizeHtmlOptions), expectedResult);
   });
-  // TODO: make this test and similar tests for entities that are not
-  // strictly valid pass, at which point decodeEntities: false is safe
-  // to use.
-  //
-  // it('Should not pass through &0; (a bogus entity) unescaped if decodeEntities is false', function() {
-  //   assert.equal(sanitizeHtml(
-  //     '<img src="<0&0;0.2&" />', {
-  //       allowedTags: ['img'],
-  //       parser: {
-  //         decodeEntities: false
-  //       }
-  //     }), '<img src="&lt;0&amp;0;0.2&amp;" />');
-  // });
+  it.only('Should should still escape text beginning with & and ending with ; which is not a valid HTML entity if decodeEntities is false', function() {
+    var dataProvider = [
+      {
+          textIn: '<img src="<0&0;0.2&" />',
+          expectedResult: '<img src="&lt;0&amp;0;0.2&amp;" />'
+      }
+    ];
+    var sanitizeHtmlOptions = {
+      parser: {
+        decodeEntities: false
+      }
+    };
+    dataProvider.forEach(function (data) {
+        assert.equal(sanitizeHtml(data.textIn, sanitizeHtmlOptions), data.expectedResult);
+    });
+  });
 });

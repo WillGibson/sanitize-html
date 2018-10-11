@@ -53,6 +53,8 @@ const VALID_HTML_ATTRIBUTE_NAME = /^[^\0\t\n\f\r /<=>]+$/;
 function sanitizeHtml(html, options, _recursing) {
   var result = '';
 
+  console.log(html);
+
   function Frame(tag, attribs) {
     var that = this;
     this.tag = tag;
