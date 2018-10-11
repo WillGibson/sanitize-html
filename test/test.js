@@ -803,8 +803,16 @@ describe('sanitizeHtml', function() {
     };
     assert.equal(sanitizeHtml(textIn, sanitizeHtmlOptions), expectedResult);
   });
-  it.only('Should should still escape text beginning with & and ending with ; which is not a valid HTML entity if decodeEntities is false', function() {
+  it('Should should still escape text beginning with & and ending with ; which is not a valid HTML entity if decodeEntities is false', function() {
     var dataProvider = [
+      {
+          textIn: '& keep;&nonvalid;&1;$&0;0.2&',
+          expectedResult: '&amp; keep;&amp;nonvalid;&amp;1;$&amp;0;0.2&amp;'
+      },
+      {
+          textIn: '& keep;&nonvalid;&1;$&0;0.2&',
+          expectedResult: '&amp; keep;&amp;nonvalid;&amp;1;$&amp;0;0.2&amp;'
+      },
       {
           textIn: '<img src="<0&0;0.2&" />',
           expectedResult: '<img src="&lt;0&amp;0;0.2&amp;" />'

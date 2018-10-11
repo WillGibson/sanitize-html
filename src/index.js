@@ -8,6 +8,8 @@ var isPlainObject = require('lodash.isplainobject');
 var srcset = require('srcset');
 var postcss = require('postcss');
 var url = require('url');
+var he = require('he');
+var htmlentities = require('locutus/php/strings/htmlentities')
 
 function each(obj, cb) {
   if (obj) Object.keys(obj).forEach(function (key) {
@@ -52,8 +54,6 @@ const VALID_HTML_ATTRIBUTE_NAME = /^[^\0\t\n\f\r /<=>]+$/;
 
 function sanitizeHtml(html, options, _recursing) {
   var result = '';
-
-  console.log(html);
 
   function Frame(tag, attribs) {
     var that = this;
@@ -419,19 +419,20 @@ function sanitizeHtml(html, options, _recursing) {
       s = s + '';
     }
     if (options.parser.decodeEntities) {
-      s = s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/\>/g, '&gt;');
-      if (quote) {
-        s = s.replace(/\"/g, '&quot;');
-      }
+      s = s.replace(/&/g, '&amp;');
+    } else {
+        console.log(s);
+        s = htmlentities(s, null, null, false);
+        console.log(s);
+      // s = he.decode(s);
+      // console.log(s);
+      // s = s.replace(/&(?![ a-zA-Z0-9#]{1,20};)/g, '&amp;') // Match ampersands not part of existing HTML entity
+      // s = s.replace(/&/g, '&amp;');
+      // console.log(s);
+      // s = he.encode(s, { 'useNamedReferences': true });
+      // console.log(s);
     }
-    // TODO: this is inadequate because it will pass `&0;`. This approach
-    // will not work, each & must be considered with regard to whether it
-    // is followed by a 100% syntactically valid entity or not, and escaped
-    // if it is not. If this bothers you, don't set parser.decodeEntities
-    // to false. (The default is true.)
-    s = s.replace(/&(?![a-zA-Z0-9#]{1,20};)/g, '&amp;') // Match ampersands not part of existing HTML entity
-      .replace(/</g, '&lt;')
-      .replace(/\>/g, '&gt;');
+    s = s.replace(/</g, '&lt;').replace(/\>/g, '&gt;');
     if (quote) {
       s = s.replace(/\"/g, '&quot;');
     }
